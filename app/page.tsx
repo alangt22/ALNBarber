@@ -1,4 +1,4 @@
-import { EyeIcon, FootprintsIcon, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import { Header } from "./_components/header"
 import { Button } from "./_components/ui/button"
 import { Input } from "./_components/ui/input"
@@ -8,7 +8,7 @@ import { Badge } from "./_components/ui/badge"
 import { Avatar, AvatarImage } from "./_components/ui/avatar"
 import { db } from "./_lib/prisma"
 import { BarbershopItem } from "./_components/barbershop-item"
-
+import { quickSearchOptions } from "./_constants/search"
 export default async function Home() {
   const barbershops = await db.barberShop.findMany({})
   const popularBarbershops = await db.barberShop.findMany({
@@ -32,35 +32,17 @@ export default async function Home() {
         </div>
 
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
-          <Button className="gap-2" variant="secondary">
-            <Image src="/cabelo.svg" alt="Cabelo" width={16} height={16} />
-            Cabelo
-          </Button>
-
-          <Button className="gap-2" variant="secondary">
-            <Image src="/barba.svg" alt="Barba" width={16} height={16} />
-            Barba
-          </Button>
-
-          <Button className="gap-2" variant="secondary">
-            <Image
-              src="/acabamento.svg"
-              alt="Acabamento"
-              width={16}
-              height={16}
-            />
-            Acabamento
-          </Button>
-
-          <Button className="gap-2" variant="secondary">
-            <FootprintsIcon size={16} />
-            Pézinho
-          </Button>
-
-          <Button className="gap-2" variant="secondary">
-            <EyeIcon size={16} />
-            Sobrancelha
-          </Button>
+          {quickSearchOptions.map((option) => (
+            <Button className="gap-2" variant="secondary" key={option.title}>
+              <Image
+                src={option.imageUrl}
+                alt={option.title}
+                width={16}
+                height={16}
+              />
+              {option.title}
+            </Button>
+          ))}
         </div>
 
         <div className="relative mt-6 h-[150px] w-full">
