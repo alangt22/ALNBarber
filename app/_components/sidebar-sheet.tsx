@@ -89,14 +89,16 @@ export function Sidebar() {
       </div>
 
       <div className="flex flex-col gap-2 p-5 py-5">
-        <Button
-          variant="ghost"
-          className="justify-start gap-2"
-          onClick={handleLogout}
-        >
-          <LogOutIcon size={18} />
-          Sair da conta
-        </Button>
+        {data?.user && (
+          <Button
+            variant="ghost"
+            className="justify-start gap-2"
+            onClick={handleLogout}
+          >
+            <LogOutIcon size={18} />
+            Sair da conta
+          </Button>
+        )}
       </div>
     </SheetContent>
   )

@@ -93,8 +93,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
 
   function handleBookingClick() {
     if (data?.user) {
-      setSignInDialogIsOpen(true)
-      return
+      return setBookingsSheetsIsOpen(true)
     }
     return setSignInDialogIsOpen(true)
   }
