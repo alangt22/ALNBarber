@@ -7,7 +7,7 @@ import { quickSearchOptions } from "./_constants/search"
 import { BookingItem } from "./_components/booking-item"
 import { Search } from "./_components/search"
 import Link from "next/link"
-import { SheetClose } from "./_components/ui/sheet"
+import { Sheet, SheetClose } from "./_components/ui/sheet"
 export default async function Home() {
   const barbershops = await db.barberShop.findMany({})
   const popularBarbershops = await db.barberShop.findMany({
@@ -29,19 +29,21 @@ export default async function Home() {
 
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
-            <SheetClose key={option.title} asChild>
-              <Button className="gap-2" variant="secondary">
-                <Link href={`/barbershops?service=${option.title}`}>
-                  <Image
-                    src={option.imageUrl}
-                    alt={option.title}
-                    width={16}
-                    height={16}
-                  />
-                  {option.title}
-                </Link>
-              </Button>
-            </SheetClose>
+            <Sheet key={option.title}>
+              <SheetClose asChild>
+                <Button className="gap-2" variant="secondary">
+                  <Link href={`/barbershops?service=${option.title}`}>
+                    <Image
+                      src={option.imageUrl}
+                      alt={option.title}
+                      width={16}
+                      height={16}
+                    />
+                    {option.title}
+                  </Link>
+                </Button>
+              </SheetClose>
+            </Sheet>
           ))}
         </div>
 

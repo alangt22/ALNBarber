@@ -4,6 +4,7 @@ import { Sidebar } from "@/app/_components/sidebar-sheet"
 import { Button } from "@/app/_components/ui/button"
 import { Sheet, SheetTrigger } from "@/app/_components/ui/sheet"
 import { db } from "@/app/_lib/prisma"
+import { BarberShopService } from "@prisma/client"
 import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -87,8 +88,12 @@ export default async function BarberShopPage({ params }: BarberShopPageProps) {
           Serviços
         </h2>
         <div className="space-y-3">
-          {barbershop?.services.map((service) => (
-            <ServiceItem key={service.id} service={service} />
+          {barbershop.services.map((service: BarberShopService) => (
+            <ServiceItem
+              key={service.id}
+              service={service}
+              barbershop={barbershop}
+            />
           ))}
         </div>
       </div>
