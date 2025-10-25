@@ -55,6 +55,13 @@ const getTimeList = (bookings: Booking[]) => {
   const timeList = TIME_LIST.filter((time) => {
     const hour = Number(time.split(":")[0])
     const minute = Number(time.split(":")[1])
+
+    // horarios que ja passaram nao seram exibidos
+    const isTimeInThePast = hour < new Date().getHours()
+    if (isTimeInThePast) {
+      return false
+    }
+
     const hasBookingOnCurrentTime = bookings.some(
       (booking) =>
         booking.date.getHours() === hour &&

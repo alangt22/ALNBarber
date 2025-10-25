@@ -8,13 +8,37 @@ import { BookingItem } from "./_components/booking-item"
 import { Search } from "./_components/search"
 import Link from "next/link"
 import { Sheet, SheetClose } from "./_components/ui/sheet"
+import { getServerSession } from "next-auth"
+import { authOptions } from "./_lib/auth"
 export default async function Home() {
+  const session = await getServerSession(authOptions)
   const barbershops = await db.barberShop.findMany({})
   const popularBarbershops = await db.barberShop.findMany({
     orderBy: {
       name: "desc",
     },
   })
+
+  const confirmedBookings = session?.user
+    ? await db.booking.findMany({
+        where: {
+          userId: session?.user.id,
+          date: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          service: {
+            include: {
+              barbershop: true,
+            },
+          },
+        },
+        orderBy: {
+          date: "asc",
+        },
+      })
+    : []
 
   return (
     <div>
@@ -56,13 +80,21 @@ export default async function Home() {
           />
         </div>
 
-        <BookingItem />
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          Agendamentos
+        </h2>
+
+        <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {confirmedBookings.map((booking) => (
+            <BookingItem key={booking.id} booking={booking} />
+          ))}
+        </div>
 
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>
 
-        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3 overflow-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
