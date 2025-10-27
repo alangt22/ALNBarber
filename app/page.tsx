@@ -10,6 +10,8 @@ import Link from "next/link"
 import { Sheet, SheetClose } from "./_components/ui/sheet"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./_lib/auth"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 export default async function Home() {
   const session = await getServerSession(authOptions)
   const barbershops = await db.barberShop.findMany({})
@@ -44,8 +46,18 @@ export default async function Home() {
     <div>
       <Header />
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Alan!</h2>
-        <p>Segunda-feira, 20 de outubro.</p>
+        <h2 className="text-xl font-bold">
+          Olá, {session?.user ? session?.user?.name : "Bem Vindo"}!
+        </h2>
+        <p>
+          <span className="capitalize">
+            {format(new Date(), "EEEE, dd", { locale: ptBR })}
+          </span>
+          <span>&nbsp;de&nbsp;</span>
+          <span className="capitalize">
+            {format(new Date(), "MMMM", { locale: ptBR })}
+          </span>
+        </p>
 
         <div className="mt-6">
           <Search />

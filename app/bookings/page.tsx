@@ -2,13 +2,13 @@ import { getServerSession } from "next-auth"
 import { Header } from "../_components/header"
 import { authOptions } from "../_lib/auth"
 import { db } from "../_lib/prisma"
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 import { BookingItem } from "../_components/booking-item"
 
 export default async function Bookings() {
   const user = await getServerSession(authOptions)
   if (!user) {
-    return notFound()
+    return redirect("/")
   }
 
   const confirmadeBookings = await db.booking.findMany({
