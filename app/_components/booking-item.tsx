@@ -30,6 +30,7 @@ import {
 import { cancelDeleteBooking } from "../_actions/cancel-delete-booking"
 import { toast } from "sonner"
 import { useState } from "react"
+import { BookingSumary } from "./booking-sumary"
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -67,7 +68,7 @@ export function BookingItem({ booking }: BookingItemProps) {
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={handleOpenSheet}>
-      <SheetTrigger className="w-full">
+      <SheetTrigger className="w-full min-w-full">
         <Card className="min-w-[90%]">
           <CardContent className="flex justify-between p-0">
             <div className="flex flex-col gap-2 py-5 pl-5">
@@ -133,40 +134,13 @@ export function BookingItem({ booking }: BookingItemProps) {
             {isConfirmed ? "Confirmado" : "Finalizado"}
           </Badge>
 
-          <Card className="mb-6 mt-3">
-            <CardContent className="space-y-3 p-3">
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold">{booking.service.name}</h2>
-                <p className="text-sm font-bold">
-                  {Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(Number(booking.service.price))}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Data</h2>
-                <p className="text-sm">
-                  {format(booking.date, "d 'de' MMMM", {
-                    locale: ptBR,
-                  })}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Horário</h2>
-                <p className="text-sm">
-                  {format(booking.date, "HH:mm", { locale: ptBR })}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Barbearia</h2>
-                <p className="text-sm">{barbershop?.name}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-6 mt-6">
+            <BookingSumary
+              service={booking.service}
+              barbershop={barbershop}
+              selectedDate={booking.date}
+            />
+          </div>
 
           <div className="space-y-3">
             {barbershop.phones.map((phone, index) => (
