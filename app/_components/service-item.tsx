@@ -201,7 +201,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
 
-                  <div className="mx-16 border-b border-solid py-5">
+                  <div className="border-b border-solid">
                     <Calendar
                       mode="single"
                       locale={ptBR}
@@ -235,7 +235,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                   </div>
 
                   {selectedDate && (
-                    <div className="flex gap-3 overflow-x-auto p-5 [&::-webkit-scrollbar]:hidden">
+                    <div className="flex gap-3 overflow-x-auto p-3 [&::-webkit-scrollbar]:hidden">
                       {timeList.length > 0 ? (
                         timeList.map((time) => (
                           <Button
@@ -267,7 +267,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                       />
                     </div>
                   )}
-                  <SheetFooter className="mt-5 px-5">
+                  <SheetFooter className="px-5">
                     <SheetClose asChild>
                       <Button
                         type="submit"
