@@ -69,6 +69,11 @@ const getTimeList = ({ bookings, selectDay }: GetTimeListProps) => {
     if (timeIsOnThePast && isToday(selectDay)) {
       return false
     }
+    // se o dia selecionado for anterior a hoje, nao serao exibidos horarios que ja passaram
+    if (!isToday(selectDay) && isPast(selectDay)) {
+      return false
+    }
+
     const hasBookingOnCurrentTime = bookings.some(
       (booking) =>
         booking.date.getHours() === hour &&
@@ -201,7 +206,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
 
-                  <div className="border-b border-solid">
+                  <div className="mb-2 ml-3 border-b border-solid">
                     <Calendar
                       mode="single"
                       locale={ptBR}
