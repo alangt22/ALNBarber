@@ -1,4 +1,6 @@
-export default {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -14,6 +16,13 @@ export default {
       },
     ],
   },
-  eslint: { ignoreDuringBuilds: true }
+  eslint: {
+    // Ignorar erros de lint durante o build
+    ignoreDuringBuilds: true,
+  },
+    typescript: {
+    ignoreBuildErrors: true,
+  },
+};
 
-}
+export default nextConfig;

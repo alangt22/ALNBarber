@@ -34,7 +34,7 @@ export const authOptions: AuthOptions = {
         ...session.user,
         id: user.id,
         role: user.role,
-        barbershopId: barbershop?.id || null,
+        barbershopId: barbershop?.id,
       }
 
       return session
