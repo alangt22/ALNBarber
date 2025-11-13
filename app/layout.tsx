@@ -5,6 +5,7 @@ import { Toaster } from "./_components/ui/sonner"
 import { Footer } from "./_components/footer"
 import { AuthProvider } from "./_providers/auth"
 
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -26,14 +27,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+  
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark-blue">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
           <div className="flex h-full flex-col">
             <div className="flex-1">{children}</div>
+            
             <Footer />
           </div>
         </AuthProvider>

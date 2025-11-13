@@ -3,7 +3,7 @@ import { Header } from "../_components/header"
 import { authOptions } from "../_lib/auth"
 import { db } from "../_lib/prisma"
 import { redirect } from "next/navigation"
-import { BookingItem } from "../_components/booking-item"
+import { BookingItem } from "../_components/_cardBooking/booking-item"
 
 export default async function Bookings() {
   const user = await getServerSession(authOptions)
@@ -52,7 +52,7 @@ export default async function Bookings() {
   return (
     <>
       <Header />
-      <div className="space-y-3 p-5">
+      <div className="space-y-3 p-5 md:m-56 md:mt-2">
         <h1 className="text-xl font-bold">Agendamentos</h1>
         {confirmadeBookings.length === 0 && concludedBookings.length === 0 && (
           <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
@@ -65,12 +65,14 @@ export default async function Bookings() {
               Confirmados
             </h2>
 
-            {confirmadeBookings.map((booking) => (
-              <BookingItem
-                key={booking.id}
-                booking={JSON.parse(JSON.stringify(booking))}
-              />
-            ))}
+            <div className="md:grid grid-cols-3 gap-4">
+              {confirmadeBookings.map((booking) => (
+                <BookingItem
+                  key={booking.id}
+                  booking={JSON.parse(JSON.stringify(booking))}
+                />
+              ))}
+            </div>
           </>
         )}
 

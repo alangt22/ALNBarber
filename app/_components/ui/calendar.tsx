@@ -27,6 +27,7 @@ function Calendar({
 
   return (
     <DayPicker
+    mode="single"
       showOutsideDays={showOutsideDays}
       className={cn(
         "group/calendar bg-background p-3 [--cell-size:2rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",

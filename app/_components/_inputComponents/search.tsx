@@ -1,31 +1,38 @@
 "use client"
 
 import { SearchIcon } from "lucide-react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
+import { Button } from "../ui/button"
+import { Input } from "../ui/input"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { z } from "zod"
 import { useForm } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form"
 
 const formSchema = z.object({
-  title: z.string().trim().min(1, {
-    message: "Digite algo para buscar",
-  }),
+  query: z.string().trim().optional(), // unificando título e serviço em um único campo
 })
+
 export function Search() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      query: "",
     },
   })
   const router = useRouter()
 
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    router.push(`/barbershops?title=${data.title}`)
+    const query = data.query?.trim()
+    if (!query) return
+
+    // envia o mesmo valor tanto para title quanto para service
+    const params = new URLSearchParams()
+    params.append("title", query)
+    params.append("service", query)
+
+    router.push(`/barbershops?${params.toString()}`)
   }
 
   return (
@@ -33,12 +40,12 @@ export function Search() {
       <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2">
         <FormField
           control={form.control}
-          name="title"
+          name="query"
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
                 <Input
-                  placeholder="Faça sua busca..."
+                  placeholder="Busque por barbearia ou serviço..."
                   {...field}
                   className="w-full"
                 />
