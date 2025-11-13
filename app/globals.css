@@ -37,6 +37,49 @@
 }
 
 @layer base {
+  .dark-blue {
+    --background: 222 18% 13%;
+    --foreground: 210 40% 98%;
+
+    --card: 223 17% 15%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 223 17% 15%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 90% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 223 12% 22%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 223 12% 22%;
+    --muted-foreground: 215 20.2% 70%;
+
+    --accent: 210 90% 42%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 223 12% 22%;
+    --input: 223 12% 22%;
+    --ring: 210 90% 48%;
+
+    --radius: 0.5rem;
+  }
+}
+
+html {
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+@layer base {
   * {
     @apply border-border antialiased;
   }
