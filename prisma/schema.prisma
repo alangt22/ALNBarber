@@ -1,4 +1,4 @@
-generator client {
+ generator client {
   provider = "prisma-client-js"
 }
 
@@ -8,16 +8,18 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String       @unique
+  role          String       @default("USER")
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  BarberShop    BarberShop[]
 }
 
 model Account {
@@ -59,13 +61,24 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+enum UserRole {
+  USER
+  BARBER
+}
+
 model BarberShop {
   id          String              @id @default(uuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
   name        String
   address     String
+  barbers     String[]
   phones      String[]
-  description String
-  imageUrl    String
+  role        String              @default("BARBER")
+  description String?
+  imageUrl    String?
+  workingDays String[]            @default(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"])
+  timeSlots    String[] 
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   services    BarberShopService[]
@@ -77,6 +90,7 @@ model BarberShopService {
   description  String
   imageUrl     String
   price        Decimal    @db.Decimal(10, 2)
+  durationMinutes Int        @default(30)
   barbershopId String
   barbershop   BarberShop @relation(fields: [barbershopId], references: [id])
   bookings     Booking[]
@@ -89,6 +103,8 @@ model Booking {
   serviceId String
   service   BarberShopService @relation(fields: [serviceId], references: [id])
   date      DateTime
+  barberName String?
+  serviceDuration Int     
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 }
