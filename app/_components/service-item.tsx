@@ -203,6 +203,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
         userId: data.user.id,
         date: bookingDate,
         barberName: selectedBarber || "",
+        time: selectedTime,
       })
 
       handleSheetOpenChange(false)

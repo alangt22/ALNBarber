@@ -11,6 +11,7 @@ interface CreateBookingParams {
   userId: string
   date: Date
   barberName: string
+  time: string
 }
 
 const DAY_MAP: Record<number, string> = {
@@ -38,12 +39,22 @@ export const createBooking = async ({
   userId,
   date,
   barberName,
+  time,
 }: CreateBookingParams) => {
   const session = await getServerSession(authOptions)
   if (!session) throw new Error("Usuário não autenticado.")
   if (session.user.id !== userId) throw new Error("Usuário inválido.")
 
-  // 🔹 Busca serviço com duração e barbearia vinculada
+  // LOG 1 — FRONT
+  console.log("📩 RECEBIDO DO FRONT:", {
+    serviceId,
+    userId,
+    date,
+    time,
+    barberName,
+  })
+
+  // Buscar serviço
   const service = await db.barberShopService.findUnique({
     where: { id: serviceId },
     include: {
@@ -61,45 +72,70 @@ export const createBooking = async ({
   if (!service) throw new Error("Serviço não encontrado.")
   const { barbershop } = service
 
-  // 🔹 Valida barbeiro
+  // Validar barbeiro
   if (!barbershop.barbers.includes(barberName)) {
     throw new Error(
       `O barbeiro ${barberName} não pertence à barbearia ${barbershop.name}.`
     )
   }
 
-  const bookingStart = new Date(date)
-  const bookingDay = DAY_MAP[bookingStart.getDay()]
-  const bookingTime = bookingStart.toTimeString().slice(0, 5)
+  // PROCESSAR DATA
+  const selectedDate = new Date(date)
 
-  // 🔹 Valida se a barbearia funciona nesse dia
+  const year = selectedDate.getFullYear()
+  const month = selectedDate.getMonth()
+  const day = selectedDate.getDate()
+
+  console.log("📆 DATA PROCESSADA:", { year, month, day })
+
+  // CORREÇÃO: usar o horário REAL enviado pelo front
+  const [hour, minute] = time.split(":").map(Number)
+
+  const bookingStart = new Date(year, month, day, hour, minute, 0, 0)
+  const bookingTime = time
+
+  console.log("🕒 HORÁRIO FINAL MONTADO:", {
+    bookingStartLocal: bookingStart.toString(),
+    bookingStartISO: bookingStart.toISOString(),
+    bookingTime,
+  })
+
+  // Descobre dia da semana
+  const bookingDay = DAY_MAP[bookingStart.getDay()]
+  console.log("📅 Dia detectado:", bookingDay)
+
+  // Validar se barbearia funciona nesse dia
   if (!barbershop.workingDays.includes(bookingDay)) {
     throw new Error(
       `A barbearia ${barbershop.name} não funciona aos ${DAY_NAMES_PT[bookingDay]}s.`
     )
   }
 
-  // 🔹 Valida se o horário está dentro dos timeSlots válidos
+  // Validar horário
+  console.log("⏱️ TIME SLOTS DA BARBEARIA:", barbershop.timeSlots)
+
   if (!barbershop.timeSlots.includes(bookingTime)) {
+    console.log("❌ HORÁRIO INVALIDO:", bookingTime)
     throw new Error(`Horário ${bookingTime} não disponível.`)
   }
 
-  // 🔹 Calcula horário de término com base em múltiplos de 30 min
+  // Calcular término do serviço
   const slotDuration = 30
   const serviceDuration = service.durationMinutes ?? 30
   const slotsToBlock =
     serviceDuration % slotDuration === 0
       ? serviceDuration / slotDuration
       : Math.ceil(serviceDuration / slotDuration)
+
   const bookingEnd = addMinutes(bookingStart, slotDuration * slotsToBlock)
 
   console.log(
-    `🕒 Criando agendamento: ${bookingTime} (${serviceDuration}min) → termina às ${bookingEnd
+    `🧮 DURAÇÃO: ${serviceDuration}min → termina às ${bookingEnd
       .toTimeString()
       .slice(0, 5)}`
   )
 
-  // 🔹 Busca agendamentos existentes no mesmo dia/barbeiro
+  // Buscar agendamentos do dia
   const dayStart = startOfDay(bookingStart)
   const dayEnd = endOfDay(bookingStart)
 
@@ -112,13 +148,13 @@ export const createBooking = async ({
       },
     },
     include: {
-      service: {
-        select: { durationMinutes: true },
-      },
+      service: { select: { durationMinutes: true } },
     },
   })
 
-  // 🔍 Verifica conflito
+  console.log("📚 AGENDAMENTOS DO DIA:", existingBookings.length)
+
+  // Verificar conflito
   const hasConflict = existingBookings.some((existing) => {
     const existingStart = new Date(existing.date)
     const existingDuration = existing.service?.durationMinutes ?? 30
@@ -134,7 +170,7 @@ export const createBooking = async ({
       console.log(
         `⚠️ CONFLITO: Novo [${bookingTime}–${bookingEnd
           .toTimeString()
-          .slice(0, 5)}] colide com [${existingStart
+          .slice(0, 5)}] vs existente [${existingStart
           .toTimeString()
           .slice(0, 5)}–${existingEnd.toTimeString().slice(0, 5)}]`
       )
@@ -147,7 +183,7 @@ export const createBooking = async ({
     throw new Error("Este horário entra em conflito com outro agendamento.")
   }
 
-  // ✅ Cria o agendamento
+  // Criar agendamento
   await db.booking.create({
     data: {
       serviceId,
@@ -155,8 +191,11 @@ export const createBooking = async ({
       date: bookingStart,
       barberName,
       serviceDuration,
+      time: bookingTime,
     },
   })
+
+  console.log("✅ AGENDAMENTO CRIADO!")
 
   revalidatePath("/barbershops/[id]")
   revalidatePath("/bookings")

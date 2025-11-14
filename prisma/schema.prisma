@@ -103,6 +103,7 @@ model Booking {
   serviceId String
   service   BarberShopService @relation(fields: [serviceId], references: [id])
   date      DateTime
+  time           String   
   barberName String?
   serviceDuration Int     
   createdAt DateTime          @default(now())
